@@ -83,8 +83,10 @@ def main():
     max_age_minutes = 3
     logger.info("Starting application")
 
+    root_dir = Path(__file__).resolve().parent
+
     current_time = time.time()
-    for file_path in Path(AUDIO_DIR).glob("*.mp3"):
+    for file_path in Path(root_dir / AUDIO_DIR).glob("*.mp3"):
         file_creation_time = os.path.getctime(file_path)
         file_age_minutes = (current_time - file_creation_time) / 60
 

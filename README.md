@@ -27,7 +27,7 @@ A Streamlit-based Python application that extracts content from YouTube videos a
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - OpenAI API key
 - YouTube Data API key (for YouTube content extraction)
 

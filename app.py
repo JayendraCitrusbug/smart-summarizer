@@ -109,6 +109,9 @@ def main():
     st.markdown(
         "Extract insights from YouTube videos and articles with AI-powered summaries and audio conversion."
     )
+    st.markdown(
+        "Only videos with captions available in English are allowed to be processed."
+    )
 
     # Initialize session state
     if "content_data" not in st.session_state:

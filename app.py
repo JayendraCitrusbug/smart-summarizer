@@ -84,6 +84,10 @@ def main():
     logger.info("Starting application")
 
     root_dir = Path(__file__).resolve().parent
+    logger.info(f"Root directory: {root_dir}")
+
+    audio_files_dir = root_dir / AUDIO_DIR
+    logger.info(f"Audio files directory: {audio_files_dir}")
 
     current_time = time.time()
     for file_path in Path(root_dir / AUDIO_DIR).glob("*.mp3"):

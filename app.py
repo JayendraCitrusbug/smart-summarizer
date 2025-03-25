@@ -249,11 +249,18 @@ def main():
             and "error" not in summary_data
             and "error" not in audio_data
         ):
+            updated_published_date = (
+                summary_data["published_date"]
+                if (
+                    summary_data["published_date"]
+                    and summary_data["published_date"] != "null"
+                    and summary_data["published_date"] != "Date not available."
+                )
+                else content_data["publish_date"]
+            )
             # Display metadata
             st.markdown(f"#### Title: {content_data['title']}")
-            st.markdown(
-                f"#### Published Date: {summary_data['published_date'] if summary_data['published_date'] else content_data['publish_date']}"
-            )
+            st.markdown(f"#### Published Date: {updated_published_date}")
             st.markdown("---")
 
             # Display audio first

@@ -1,4 +1,5 @@
 import os
+import time
 import streamlit as st
 import base64
 from pathlib import Path
@@ -72,6 +73,21 @@ def get_audio_file_link(file_path):
 
 
 def main():
+    max_age_minutes = 3
+
+    current_time = time.time()
+    for file_path in Path(AUDIO_DIR).glob("*.mp3"):
+        file_creation_time = os.path.getctime(file_path)
+
+        file_age_minutes = (current_time - file_creation_time) / 60
+
+        if file_age_minutes < max_age_minutes:
+            try:
+                # Delete the file
+                os.remove(file_path)
+            except Exception as e:
+                pass
+
     st.markdown(
         '<div class="main-header">Smart Content Summary & Audio Generator</div>',
         unsafe_allow_html=True,

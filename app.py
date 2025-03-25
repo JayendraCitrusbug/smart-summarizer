@@ -84,6 +84,7 @@ def main():
         if file_age_minutes >= max_age_minutes:
             try:
                 # Delete the file
+                st.info(f"Deleting file: {file_path}")
                 os.remove(file_path)
             except Exception as e:
                 pass

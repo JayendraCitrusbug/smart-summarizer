@@ -54,10 +54,7 @@ def generate_audio(text: str, title: str, output_dir: str) -> dict:
         # Save the audio file
         response.stream_to_file(output_path)
 
-        return {
-            "audio_path": output_path,
-            "note": "Audio generated successfully. You can play it below or download it.",
-        }
+        return {"audio_path": output_path}
 
     except Exception as e:
         logger.error(f"Error generating audio: {str(e)}")

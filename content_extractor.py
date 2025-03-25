@@ -63,8 +63,6 @@ def get_published_date(video_id, api_key):
 
         return {"published_date": published_date.strftime("%Y-%m-%d")}
     except Exception as e:
-        print("Error parsing published date:", e)
-        print("*" * 100)
         return {"error": "Error parsing published date."}
 
 

@@ -81,7 +81,7 @@ def main():
 
         file_age_minutes = (current_time - file_creation_time) / 60
 
-        if file_age_minutes < max_age_minutes:
+        if file_age_minutes >= max_age_minutes:
             try:
                 # Delete the file
                 os.remove(file_path)

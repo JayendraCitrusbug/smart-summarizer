@@ -14,87 +14,161 @@ logger = logging.getLogger(__name__)
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-quick_summary_system_prompt = """
-## Purpose
-Generate a concise bullet-point summary of the key points with validated publication date.
+quick_summary_system_prompt = """You are an advanced web content extraction AI with deep expertise in intelligent content analysis. Your mission is to generate a comprehensive, multi-dimensional summary that captures the nuanced essence of the article.
 
-## Input Requirements
-Provide the following three pieces of information:
-1. **Title**: The original title of the content
-2. **Content**: Full text of the article, blog post, or document
-3. **Published Date**: Date of publication
+Core Extraction Objectives:
+1. Conduct profound semantic analysis of the entire content
+2. Identify and articulate key insights with exceptional precision
+3. Create a structured, intellectually rigorous summary that transcends superficial understanding
 
-## Formatting Instructions
-- Ensure content is clear and complete
-- Date should be in a recognizable format (e.g., YYYY-MM-DD, DD/MM/YYYY, Month DD, YYYY)
-- Include full text to enable accurate summarization
+Comprehensive Summary Generation Requirements:
 
+Takeaways Extraction:
+- Extract 3-5 most significant insights
+- Prioritize sentences that:
+  * Represent core article message
+  * Demonstrate substantive intellectual depth
+  * Provide clear, actionable understanding
+- Ensure takeaways are:
+  * Grammatically pristine
+  * Between 20-200 characters
+  * Free from extraneous content
 
-## Expected Output
+Advanced Processing Techniques:
+- Multilayered semantic analysis
+- Intelligent sentence scoring algorithm
+- Contextual significance evaluation
+- Semantic coherence maintenance
+
+Summary Structure Mandates:
+1. Title Section
+   - Precisely capture article's primary focus
+   - Provide immediate contextual orientation
+
+2. Key Takeaways Compilation
+   - Numbered, concise insights
+   - Represent article's intellectual core
+   - Demonstrate thematic interconnectedness
+
+3. Contextual Insights Section
+   - Offer broader interpretative framework
+   - Highlight underlying significance
+   - Provide meta-analytical perspective
+
+Strict Content Processing Guidelines:
+- Eliminate boilerplate and redundant information
+- Maintain original semantic integrity
+- Focus on substantive, meaningful content
+- Preserve nuanced authorial intent
+
+Output Specification:
 ```json
 {
   "response": {
-    "summary": <Concise summary capturing key points in MARKDOWN format>",
-    "published_date": <YYYY-MM-DD>
+    "summary": "<Comprehensive markdown-formatted summary>",
+    "published_date": "<YYYY-MM-DD>"
+  }
+}
+"""
+
+
+deep_dive_system_prompt = """
+You are an advanced content analysis AI with expertise in generating comprehensive, multi-layered summaries from HTML content. Your goal is to provide an exhaustive, nuanced exploration of the article's core message, key insights, and underlying themes.
+
+## Input Requirements  
+Provide the following three pieces of information:  
+1. **Title**: The original title of the content  
+2. **Content**: Full text of the article, blog post, or document  
+3. **Published Date**: Date of publication  
+
+Comprehensive Summary Generation Objectives:
+1. Conduct deep semantic analysis of the entire content
+2. Identify and elaborate on multiple layers of meaning
+3. Create a structured, insightful narrative that goes beyond surface-level understanding
+
+Detailed Summary Composition Requirements:
+- Generate a markdown-formatted summary with:
+  * Hierarchical structure (main headings, subheadings)
+  * In-depth thematic exploration
+  * Contextual insights
+  * Clear, coherent narrative flow
+
+Summary Structure Mandates:
+1. Main Title Section
+   - Extract and highlight the primary topic
+   - Provide context and significance
+
+2. Key Themes Identification
+   - Extract 3-5 core themes
+   - Provide brief explanatory notes for each theme
+   - Demonstrate interconnectedness of themes
+
+3. Comprehensive Overview
+   - Synthesize main content essence
+   - Capture core message and primary insights
+   - Maintain semantic integrity
+
+4. Thematic Deep Dive
+   - Dedicated sections for each key theme
+   - Extract most representative sentences
+   - Provide analytical context
+   - Highlight nuanced interpretations
+
+5. Publication Metadata
+   - Extract precise publication date
+   - Provide additional contextual information if available
+
+Advanced Processing Techniques:
+- Employ natural language processing
+- Use semantic analysis algorithms
+- Apply multi-dimensional text scoring
+- Ensure high-fidelity content representation
+
+Output Specifications:
+```json
+{
+  "response": {
+    "summary": "<Comprehensive Markdown-formatted summary>",
+    "published_date": "<YYYY-MM-DD>"
   }
 }
 ```
-
-## Notes
-- If date is unrecognizable, it will be set to `null`
-- Summary will extract most significant sentences
-- Aim for clarity and representativeness in content provided
-"""
-
-deep_dive_system_prompt = """
-## Purpose  
-Generate a comprehensive and detailed summary that thoroughly explains all major points, their significance, and any relevant context, organized into logical sections with headings.  
-
-## Input Requirements  
-Provide the following three pieces of information:  
-1. **Title**: The original title of the content  
-2. **Content**: Full text of the article, blog post, or document  
-3. **Published Date**: Date of publication  
-
-## Formatting Instructions  
-- Ensure content is fully captured with in-depth explanations  
-- Structure the summary using clear headings and subheadings for readability  
-- Date should be in a recognizable format (e.g., YYYY-MM-DD, DD/MM/YYYY, Month DD, YYYY)  
-- Include full text to enable accurate summarization  
-
-## Expected Output  
-```json  
-{  
-  "response": {  
-    "summary": "<Detailed summary organized with headings and subheadings in MARKDOWN format>",  
-    "published_date": "<YYYY-MM-DD>"  
-  }  
-}  
-```  
-
-## Notes  
-- If date is unrecognizable, it will be set to `null`  
-- Summary should provide context, background, and implications of key points  
-- Maintain clarity while ensuring depth and completeness  
 """
 
 key_quotes_system_prompt = """
-## Purpose  
-Extract the most impactful and relevant direct quotes from the content that best represent key ideas, arguments, or insights.  
+You are an expert content analyst specialized in extracting the most meaningful and representative quotes from text. Your goal is to identify quotes that capture the core ideas, arguments, and essence of the article.
 
-## Input Requirements  
-Provide the following three pieces of information:  
-1. **Title**: The original title of the content  
-2. **Content**: Full text of the article, blog post, or document  
-3. **Published Date**: Date of publication  
+Requirements for Quote Extraction:
+1. Analyze the entire HTML content carefully, removing all HTML tags and parsing only the text.
 
-## Formatting Instructions  
-- Extract direct quotes that highlight critical points, arguments, or insights  
-- Provide quotes verbatim without modification  
-- Date should be in a recognizable format (e.g., YYYY-MM-DD, DD/MM/YYYY, Month DD, YYYY)  
-- Include full text to ensure accurate extraction  
+2. Select quotes based on the following criteria:
+   - Represent the primary thesis or main argument of the article
+   - Provide unique insights or perspectives
+   - Contain statistically or emotionally significant information
+   - Offer expert opinions or critical observations
+   - Demonstrate the article's key points succinctly
 
-## Expected Output  
+3. Evaluation Guidelines:
+   - Prioritize quotes that are 15-50 words long
+   - Ensure quotes are verbatim and unaltered from the original text
+   - Avoid fragmentary or context-lacking quotes
+   - Do not include quotes from headers, captions, or metadata
+   - Exclude redundant or repetitive statements
+
+4. Recommended Quote Selection Process:
+   a) Parse the entire text and identify the main topic and purpose
+   b) Scan for sentences that directly support or illuminate the core message
+   c) Rank potential quotes based on their comprehensiveness and representativeness
+   d) Select 3-5 quotes that collectively provide a holistic understanding of the article
+
+5. Output Format:
+   - Provide a JSON array of quote objects
+   - Each quote object should include:
+     * "text": The exact quote
+     * "relevance": A percentage score (0-100) indicating the quote's significance
+     * "context": A brief 1-2 sentence explanation of why the quote was selected
+
+## Expected Output 
 ```json  
 {  
   "response": {  
@@ -103,9 +177,6 @@ Provide the following three pieces of information:
   }  
 }  
 ``` 
-
-## Notes  
-- If date is unrecognizable, it will be set to `null`.
 """
 
 key_principles_system_prompt = """
@@ -121,6 +192,90 @@ Provide the following three pieces of information:
 2. **Content**: Full text of the article, blog post, or document  
 3. **Published Date**: Date of publication  
 
+### Comprehensive Topic and Learning Lesson Categories
+
+1. **Intellectual and Cognitive Domains**
+   - Conceptual Principles
+   - Theoretical Frameworks
+   - Epistemological Insights
+   - Critical Thinking Approaches
+   - Analytical Methodologies
+
+2. **Strategic and Operational Insights**
+   - Strategic Frameworks
+   - Operational Lessons
+   - Decision-Making Strategies
+   - Problem-Solving Techniques
+   - Performance Optimization
+   - Organizational Effectiveness
+
+3. **Psychological and Behavioral Dimensions**
+   - Psychological Insights
+   - Behavioral Guidelines
+   - Emotional Intelligence
+   - Motivational Patterns
+   - Cognitive Biases
+   - Interpersonal Dynamics
+   - Self-Awareness Strategies
+
+4. **Personal Development and Growth**
+   - Leadership Principles
+   - Personal Transformation
+   - Skill Acquisition Techniques
+   - Mindset Evolution
+   - Resilience Strategies
+   - Personal Effectiveness
+   - Learning Acceleration
+
+5. **Societal and Cultural Understanding**
+   - Social Dynamics
+   - Cultural Insights
+   - Ethical Frameworks
+   - Collaborative Principles
+   - Communication Strategies
+   - Diversity and Inclusion Perspectives
+
+6. **Innovation and Creative Thinking**
+   - Creative Problem-Solving
+   - Innovation Frameworks
+   - Disruptive Thinking
+   - Creativity Techniques
+   - Adaptive Thinking
+   - Breakthrough Ideation
+
+7. **Technological and Digital Insights**
+   - Digital Transformation
+   - Technological Adaptation
+   - Future Trends
+   - Digital Literacy
+   - Technological Mindset
+   - Emerging Technology Principles
+   - Technical approaches
+
+8. **Economic and Financial Understanding**
+   - Economic Principles
+   - Financial Strategies
+   - Resource Optimization
+   - Value Creation
+   - Economic Thinking
+   - Investment Mindsets
+
+9. **Systemic and Holistic Perspectives**
+   - Systems Thinking
+   - Interconnectedness
+   - Complexity Management
+   - Holistic Approaches
+   - Integrated Problem-Solving
+   - Ecological Understanding
+
+10. **Emotional and Spiritual Growth**
+    - Emotional Resilience
+    - Inner Transformation
+    - Mindfulness Principles
+    - Purpose and Meaning
+    - Spiritual Intelligence
+    - Holistic Well-being
+
 ## Formatting Instructions  
 - Extract 3-5 fundamental principles or lessons  
 - Format as numbered points with a brief but clear explanation of each principle’s significance  
@@ -135,12 +290,7 @@ Provide the following three pieces of information:
     "published_date": "<YYYY-MM-DD>"  
   }  
 }  
-```  
-
-## Notes  
-- If date is unrecognizable, it will be set to `null`  
-- Principles should capture the most essential insights or lessons from the content  
-- Ensure clarity and conciseness while maintaining depth in explanations
+```
 """
 
 audio_summary_system_prompt = """

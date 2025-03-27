@@ -75,7 +75,9 @@ def get_audio_file_link(file_path):
     b64_audio = base64.b64encode(audio_bytes).decode()
     filename = os.path.basename(file_path)
 
-    href = f'<a href="data:audio/mp3;base64,{b64_audio}" download="{filename}">Download Audio File</a>'
+    href = (
+        f'<a href="data:audio/mp3;base64,{b64_audio}" download="{filename}">Download Audio File</a>'
+    )
     return href
 
 
@@ -109,9 +111,7 @@ def main():
     st.markdown(
         "Extract insights from YouTube videos and articles with AI-powered summaries and audio conversion."
     )
-    st.markdown(
-        "Only videos with captions available in English are allowed to be processed."
-    )
+    st.markdown("Only videos with captions available in English are allowed to be processed.")
 
     # Initialize session state
     if "content_data" not in st.session_state:
@@ -160,9 +160,7 @@ def main():
             "Generate Summary", type="primary", disabled=st.session_state.is_processing
         ):
             if url:
-                logger.info(
-                    f"Form submitted with URL: {url} and summary type: {summary_type}"
-                )
+                logger.info(f"Form submitted with URL: {url} and summary type: {summary_type}")
                 st.session_state.is_processing = True
                 st.session_state.processing_type = "summary"
                 st.rerun()
@@ -182,6 +180,15 @@ def main():
                     st.error(error_msg)
                     st.session_state.is_processing = False
                     st.session_state.processing_type = None
+
+                    # Add a retry button
+                    if st.button("Retry"):
+                        # Reset the session state variables when retry is clicked
+                        st.session_state.is_processing = True
+                        st.session_state.processing_type = None
+                        st.session_state.content_data = None
+                        st.session_state.summary_data = None
+                        st.experimental_rerun()  # Rerun the app to start the process again
                 else:
                     st.session_state.content_data = content_data
                     logger.info("Starting summary generation")
@@ -193,13 +200,20 @@ def main():
                     )
 
                     if "error" in summary_data:
-                        error_msg = (
-                            f"Error in summary generation: {summary_data['error']}"
-                        )
+                        error_msg = f"Error in summary generation: {summary_data['error']}"
                         logger.error(error_msg)
                         st.error(error_msg)
                         st.session_state.is_processing = False
                         st.session_state.processing_type = None
+
+                        # Add a retry button
+                        if st.button("Retry"):
+                            # Reset the session state variables when retry is clicked
+                            st.session_state.is_processing = True
+                            st.session_state.processing_type = None
+                            st.session_state.content_data = None
+                            st.session_state.summary_data = None
+                            st.experimental_rerun()  # Rerun the app to start the process again
                     else:
                         st.session_state.summary_data = summary_data
                         logger.info("Summary generation completed successfully")
@@ -264,9 +278,7 @@ def main():
             st.markdown("---")
 
             # Display audio first
-            st.markdown(
-                f'<div class="sub-header">Summary Audio</div>', unsafe_allow_html=True
-            )
+            st.markdown(f'<div class="sub-header">Summary Audio</div>', unsafe_allow_html=True)
 
             if "note" in audio_data:
                 logger.info(f"Audio generation note: {audio_data['note']}")
@@ -276,9 +288,7 @@ def main():
             audio_bytes = audio_file.read()
             st.audio(audio_bytes, format="audio/mp3")
 
-            st.markdown(
-                get_audio_file_link(audio_data["audio_path"]), unsafe_allow_html=True
-            )
+            st.markdown(get_audio_file_link(audio_data["audio_path"]), unsafe_allow_html=True)
 
             # Display summary after audio
             st.markdown("---")

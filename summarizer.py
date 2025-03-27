@@ -65,7 +65,7 @@ Output Specification:
 {
   "response": {
     "summary": "<Comprehensive markdown-formatted summary>",
-    "published_date": "<YYYY-MM-DD>"
+    "published_date": "<Date Month, YYYY>"
   }
 }
 """
@@ -123,7 +123,7 @@ Output Specifications:
 {
   "response": {
     "summary": "<Comprehensive Markdown-formatted summary>",
-    "published_date": "<YYYY-MM-DD>"
+    "published_date": "<Date Month, YYYY>"
   }
 }
 ```
@@ -137,7 +137,7 @@ Read the following blog content and generate new, crafted key quotes that captur
 {  
   "response": {  
     "summary": "<Extracted quote in MARKDOWN format>",  
-    "published_date": "<YYYY-MM-DD>"  
+    "published_date": "<Date Month, YYYY>"  
   }  
 }  
 ``` 
@@ -158,7 +158,7 @@ Provide the following three pieces of information:
 {  
   "response": {  
     "summary": "<Core principles or lessons with explanations in MARKDOWN format>",  
-    "published_date": "<YYYY-MM-DD>"  
+    "published_date": "<Date Month, YYYY>"  
   }  
 }  
 ```

@@ -296,8 +296,7 @@ def main():
 
             st.markdown(get_audio_file_link(audio_data["audio_path"]), unsafe_allow_html=True)
 
-            html(
-                f"""
+            copy_button_javascript = f"""
                 <button id="copy-button" style="margin-top: 10px;">Copy Summary to Clipboard</button>
                 <script>
                     document.getElementById("copy-button").onclick = function() {{
@@ -311,10 +310,9 @@ def main():
                     alert("Summary copied to clipboard!");
                 }}
                 </script>
-                """,
-                height=50,
-                width=200,
-            )
+                """
+
+            html(copy_button_javascript, height=50, width=200)
 
             # Display summary after audio
             st.markdown("---")

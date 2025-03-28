@@ -8,6 +8,7 @@ from pathlib import Path
 from content_extractor import extract_content
 from summarizer import generate_audio_summary, generate_summary
 from audio_generator import generate_audio
+from streamlit.components.v1 import html
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -188,6 +189,7 @@ def main():
                         st.session_state.processing_type = None
                         st.session_state.content_data = None
                         st.session_state.summary_data = None
+                        st.session_state.audio_summary = None
                         st.experimental_rerun()  # Rerun the app to start the process again
                 else:
                     st.session_state.content_data = content_data
@@ -213,6 +215,7 @@ def main():
                             st.session_state.processing_type = None
                             st.session_state.content_data = None
                             st.session_state.summary_data = None
+                            st.session_state.audio_summary = None
                             st.experimental_rerun()  # Rerun the app to start the process again
                     else:
                         st.session_state.summary_data = summary_data
@@ -234,6 +237,8 @@ def main():
                         logger.info("Using original summary for audio generation")
                         audio_summary = st.session_state.summary_data["summary"]
 
+                    st.session_state.audio_summary = audio_summary
+
                     audio_data = generate_audio(
                         text=audio_summary,
                         title=st.session_state.content_data["title"],
@@ -246,6 +251,7 @@ def main():
 
                 st.session_state.is_processing = False
                 st.session_state.processing_type = None
+
                 st.rerun()
 
     if (
@@ -278,7 +284,7 @@ def main():
             st.markdown("---")
 
             # Display audio first
-            st.markdown(f'<div class="sub-header">Summary Audio</div>', unsafe_allow_html=True)
+            st.markdown('<div class="sub-header">Summary Audio</div>', unsafe_allow_html=True)
 
             if "note" in audio_data:
                 logger.info(f"Audio generation note: {audio_data['note']}")
@@ -289,6 +295,26 @@ def main():
             st.audio(audio_bytes, format="audio/mp3")
 
             st.markdown(get_audio_file_link(audio_data["audio_path"]), unsafe_allow_html=True)
+
+            html(
+                f"""
+                <button id="copy-button" style="margin-top: 10px;">Copy Summary to Clipboard</button>
+                <script>
+                    document.getElementById("copy-button").onclick = function() {{
+                    let summaryText = `{st.session_state.audio_summary.replace("'", "\\'")}`;
+                    let tempInput = document.createElement('textarea');
+                    tempInput.value = summaryText;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    alert("Summary copied to clipboard!");
+                }}
+                </script>
+                """,
+                height=50,
+                width=200,
+            )
 
             # Display summary after audio
             st.markdown("---")

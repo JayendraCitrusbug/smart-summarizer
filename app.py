@@ -309,7 +309,7 @@ def main():
                     document.body.removeChild(tempInput);
                     alert("Summary copied to clipboard!");
                 }}
-                </script>
+                <//script>
                 """
 
             html(copy_button_javascript, height=50, width=200)

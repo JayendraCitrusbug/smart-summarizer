@@ -227,15 +227,8 @@ def main():
             if st.session_state.content_data and st.session_state.summary_data:
                 logger.info("Starting audio generation")
                 with st.spinner("Generating audio..."):
-                    audio_summary = generate_audio_summary(
-                        content=st.session_state.summary_data["summary"],
-                        title=st.session_state.content_data["title"],
-                        summary_type=summary_type_map[summary_type],
-                    )
-
-                    if not audio_summary:
-                        logger.info("Using original summary for audio generation")
-                        audio_summary = st.session_state.summary_data["summary"]
+                    logger.info("Using original summary for audio generation")
+                    audio_summary = st.session_state.summary_data["summary"]
 
                     st.session_state.audio_summary = audio_summary
 

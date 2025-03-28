@@ -296,21 +296,7 @@ def main():
 
             st.markdown(get_audio_file_link(audio_data["audio_path"]), unsafe_allow_html=True)
 
-            copy_button_javascript = f"""
-                <button id="copy-button" style="margin-top: 10px;">Copy Summary to Clipboard</button>
-                <script>
-                    document.getElementById("copy-button").onclick = function() {{
-                    let summaryText = `{st.session_state.audio_summary.replace("'", "\\'")}`;
-                    let tempInput = document.createElement('textarea');
-                    tempInput.value = summaryText;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    alert("Summary copied to clipboard!");
-                }}
-                <//script>
-                """
+            copy_button_javascript = f"<button id='copy-button' style='margin-top: 10px;'>Copy Summary to Clipboard</button><script>document.getElementById('copy-button').onclick = function() {{let summaryText = `{st.session_state.audio_summary}`;let tempInput = document.createElement('textarea');tempInput.value = summaryText;document.body.appendChild(tempInput);tempInput.select();document.execCommand('copy');document.body.removeChild(tempInput);alert('Summary copied to clipboard!');}}<//script>"
 
             html(copy_button_javascript, height=50, width=200)
 
